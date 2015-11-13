@@ -1,0 +1,58 @@
+front controllers:
+/web.php and /cli.php
+
+both front controllers getting reader and writer class names and parameters from client
+
+web.php initialize OpsWay\Migration\Processor\YieldProcessor and use it interface (invoke YieldProcessor::processing())
+cli.php initialize OpsWay\Migration\Processor\ReadWriteProcessor and use it interface (invoke ReadWriteProcessor::processing())
+
+    YieldProcessor and ReadWriteProcessor extends parent class OpsWay\Migration\Processor\AbstractProcessor
+
+    OpsWay\Migration\Processor\AbstractProcessor
+        - height level of processor abstraction
+        - implements OpsWay\Migration\Processor\ProcessorInterface
+        - use aggregating (Dependency Injection) gets in constructor ReaderInterface object, WriterInterface object and some logger object
+        - describe getters and setters for DI
+
+    OpsWay\Migration\Processor\ProcessorInterface
+    - describe interface of Processor class family (declared processing() function)
+
+both front controllers using OpsWay\Migration\Reader\ReaderFactory for initialize Reader object
+both front controllers using OpsWay\Migration\Writer\WriterFactory for initialize Writer object
+
+    ReaderFactory and WriterFactory classes using OpsWay\Migration\Factory\ReaderWriterTrait
+
+    OpsWay\Migration\Factory\ReaderWriterTrait
+        - trait factory for initialize new Reader or Writer instance;
+        - gets class name and parameters arguments in createInstance() method;
+
+both front controllers initialize OpsWay\Migration\Logger instance
+
+    OpsWay\Migration\Logger\ConsoleLogger
+    - console logger show output on console
+
+invoke ReadWriteProcessor::processing()
+    - trying to read info throw the Reader object and write it throw the Writer object
+    - if exception - invoke Logger
+
+invoke YieldProcessor::processing()
+    - trying to read info throw the Reader object and output in throw the Logger
+
+there is only one reader class available - OpsWay\Migration\Reader\Db\Product
+
+    OpsWay\Migration\Reader\Db\Product
+        - gets connection params in constructor (parameters are setting up in config file)
+        - returns all records from table "products"
+
+there are 3 realized writers
+    OpsWay\Migration\Writer\Html
+        - output data to the html table
+    OpsWay\Migration\Writer\ConsoleOutput
+        - output keywords imploding by comma then output values as the same
+    OpsWay\Migration\Writer\File\Csv
+        - output data to csv file
+
+and one OpsWay\Migration\Writer\Stub which just returns true in its write() method
+
+all writers implements OpsWay\Migration\Writer\WriterInterface (declared write())
+
