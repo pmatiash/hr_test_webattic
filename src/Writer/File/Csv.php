@@ -7,10 +7,14 @@ use OpsWay\Migration\Writer\WriterInterface;
 class Csv implements WriterInterface
 {
     protected $file;
-    protected $filename;
+    protected $filename = 'default.csv';
 
-    public function __construct()
+    public function __construct(array $params)
     {
+        if (!empty($params['filename'])) {
+            $this->filename =  $params['filename'];
+        }
+
         $this->checkFileName();
     }
 
