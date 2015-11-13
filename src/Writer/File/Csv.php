@@ -2,9 +2,9 @@
 
 namespace OpsWay\Migration\Writer\File;
 
-use OpsWay\Migration\Writer\WriterInterface;
+use OpsWay\Migration\Writer\WriterFileInterface;
 
-class Csv implements WriterInterface
+class Csv implements WriterFileInterface
 {
     protected $file;
     protected $filename = 'default.csv';
@@ -46,5 +46,19 @@ class Csv implements WriterInterface
         if (file_exists($this->filename)) {
             throw new \RuntimeException(sprintf('File "%s" already exists. Remove it and run again.', $this->filename));
         }
+    }
+
+    /**
+     * @param string $fileName
+     * @return $this
+     */
+    public function setFilename($fileName)
+    {
+        if (!$fileName) {
+            throw new \RuntimeException('File Name is not set!');
+        }
+
+        $this->filename = $fileName;
+        return $this;
     }
 }
