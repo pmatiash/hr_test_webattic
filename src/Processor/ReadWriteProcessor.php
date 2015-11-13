@@ -11,6 +11,7 @@ class ReadWriteProcessor extends AbstractProcessor
 {
     public function processing()
     {
+        $counter = 0;
         while ($item = $this->getReader()->read()) {
             try {
                 $status = $this->getWriter()->write($item);
@@ -19,7 +20,8 @@ class ReadWriteProcessor extends AbstractProcessor
                 $status = false;
                 $msg = $e->getMessage();
             }
-            call_user_func($this->getLogger(), $item, $status, $msg);
+            call_user_func($this->getLogger(), $item, $status, $msg, $counter);
+            $counter++;
         }
     }
 }
